@@ -135,6 +135,8 @@ function buildGeneratedGame(filters, userId, poolId = null) {
   const total = Number(filters.total_numbers || 60)
   const numbers = pickNumbers(total, picks)
   const gameSum = numbers.reduce((sum, value) => sum + value, 0)
+  const aiRanked = Math.random() > 0.35
+  const aiConfidence = aiRanked ? Number((0.58 + Math.random() * 0.32).toFixed(2)) : null
   return {
     id: Date.now() + Math.floor(Math.random() * 1000),
     lottery_type: filters.lottery_type,
@@ -142,7 +144,17 @@ function buildGeneratedGame(filters, userId, poolId = null) {
     score: Math.floor(20 + Math.random() * 10),
     game_sum: gameSum,
     even_count: numbers.filter((value) => value % 2 === 0).length,
-    source: 'demo',
+    source: aiRanked ? 'ai-ranked' : 'demo',
+    ai_confidence: aiConfidence,
+    ai_notes: aiRanked
+      ? 'Ranking reforcado por consenso entre motor local, ChatGPT e Gemini no modo demonstracao.'
+      : null,
+    ai_provider_votes: aiRanked
+      ? {
+          chatgpt: 'Destacou distribuicao equilibrada e soma central.',
+          gemini: 'Priorizou menor concentracao e paridade consistente.',
+        }
+      : null,
     user_id: userId,
     pool_id: poolId,
   }

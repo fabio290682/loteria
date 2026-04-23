@@ -20,6 +20,9 @@ class GeneratedGameItem(BaseModel):
     score: int
     sum: int
     even_count: int
+    ai_confidence: float | None = None
+    ai_notes: str | None = None
+    ai_provider_votes: dict[str, Any] | None = None
 
 
 class GenerateGamesResponse(BaseModel):
@@ -39,6 +42,9 @@ class SavedGameResponse(BaseModel):
     filters: dict[str, Any]
     source: str
     pool_id: int | None = None
+    ai_confidence: float | None = None
+    ai_notes: str | None = None
+    ai_provider_votes: dict[str, Any] | None = None
 
     class Config:
         from_attributes = True

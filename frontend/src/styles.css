@@ -481,6 +481,73 @@ label {
   padding: 14px;
 }
 
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.status-badge.ai {
+  background: rgba(74, 222, 128, 0.14);
+  border: 1px solid rgba(74, 222, 128, 0.24);
+  color: #86efac;
+}
+
+.status-badge.neutral {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d7e3fb;
+}
+
+.status-badge.confidence {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  color: #7dd3fc;
+}
+
+.ai-note {
+  margin: 10px 0 0;
+  line-height: 1.6;
+  color: #d7e3fb;
+}
+
+.ai-votes {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ai-vote-line {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(15, 32, 64, 0.72);
+  border: 1px solid rgba(96, 184, 240, 0.12);
+}
+
+.ai-vote-line strong {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--blue-soft);
+}
+
+.ai-vote-line span {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .feature-list {
   padding-left: 18px;
   color: #d7e3fb;

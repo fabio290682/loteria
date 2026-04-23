@@ -27,6 +27,7 @@ def generate_and_save(payload: GenerateGamesRequest, db: Session = Depends(get_d
     generated = generate_games(filters)
     records = []
     for game in generated:
+        ai_confidence = game.get('ai_confidence')
         record = GeneratedGame(
             lottery_type=payload.lottery_type,
             numbers=game['numbers'],
@@ -35,7 +36,10 @@ def generate_and_save(payload: GenerateGamesRequest, db: Session = Depends(get_d
             even_count=game['even_count'],
             filters=filters,
             user_id=user.id,
-            source='manual',
+            source='ai-ranked' if ai_confidence is not None else 'manual',
+            ai_confidence=ai_confidence,
+            ai_notes=game.get('ai_notes'),
+            ai_provider_votes=game.get('ai_provider_votes'),
         )
         db.add(record)
         records.append(record)

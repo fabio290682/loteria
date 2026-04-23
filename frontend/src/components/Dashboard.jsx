@@ -36,6 +36,19 @@ function formatCurrency(value) {
   return `R$ ${Number(value).toFixed(2)}/mes`
 }
 
+function formatConfidence(value) {
+  if (typeof value !== 'number') return null
+  return `${Math.round(value * 100)}%`
+}
+
+function formatSourceLabel(value) {
+  if (value === 'ai-ranked') return 'IA validada'
+  if (value === 'manual') return 'Motor local'
+  if (value === 'pool') return 'Bolao'
+  if (value === 'demo') return 'Demo'
+  return value
+}
+
 function NumberBalls({ numbers }) {
   return (
     <div className="number-list">
@@ -45,6 +58,38 @@ function NumberBalls({ numbers }) {
         </span>
       ))}
     </div>
+  )
+}
+
+function ProviderVotes({ votes }) {
+  if (!votes || typeof votes !== 'object' || Object.keys(votes).length === 0) return null
+
+  return (
+    <div className="ai-votes">
+      {Object.entries(votes).map(([provider, note]) => (
+        <div key={provider} className="ai-vote-line">
+          <strong>{provider}</strong>
+          <span>{String(note)}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function GameInsights({ game }) {
+  return (
+    <>
+      <div className="card-badges">
+        <span className={`status-badge ${game.source === 'ai-ranked' ? 'ai' : 'neutral'}`}>
+          {formatSourceLabel(game.source)}
+        </span>
+        {typeof game.ai_confidence === 'number' && (
+          <span className="status-badge confidence">Confianca {formatConfidence(game.ai_confidence)}</span>
+        )}
+      </div>
+      {game.ai_notes && <p className="ai-note">{game.ai_notes}</p>}
+      <ProviderVotes votes={game.ai_provider_votes} />
+    </>
   )
 }
 
@@ -70,11 +115,14 @@ export default function Dashboard({ user }) {
   })
   const [memberEmail, setMemberEmail] = useState('')
 
-  const lotteryConfig = useMemo(() => ({
-    lotofacil: { total: 25, picks: 15, minSum: 120, maxSum: 220, accent: 'lime' },
-    quina: { total: 80, picks: 5, minSum: 80, maxSum: 250, accent: 'sky' },
-    megasena: { total: 60, picks: 6, minSum: 100, maxSum: 240, accent: 'amber' },
-  }), [])
+  const lotteryConfig = useMemo(
+    () => ({
+      lotofacil: { total: 25, picks: 15, minSum: 120, maxSum: 220, accent: 'lime' },
+      quina: { total: 80, picks: 5, minSum: 80, maxSum: 250, accent: 'sky' },
+      megasena: { total: 60, picks: 6, minSum: 100, maxSum: 240, accent: 'amber' },
+    }),
+    [],
+  )
 
   const refreshAll = async (lotteryType = filters.lottery_type) => {
     try {
@@ -88,7 +136,8 @@ export default function Dashboard({ user }) {
         api.pools(),
         api.me(),
       ]
-      const [hist, plansRes, subs, latestRes, latestHistory, cached, poolsRes, me] = await Promise.all(requests)
+      const [hist, plansRes, subs, latestRes, latestHistory, cached, poolsRes, me] =
+        await Promise.all(requests)
       setHistory(hist)
       setPlans(plansRes)
       setSubscriptions(subs)
@@ -172,7 +221,10 @@ export default function Dashboard({ user }) {
   const handleGeneratePoolGames = async () => {
     if (!selectedPool) return
     try {
-      await api.generatePoolGames(selectedPool.id, { ...filters, lottery_type: selectedPool.lottery_type })
+      await api.generatePoolGames(selectedPool.id, {
+        ...filters,
+        lottery_type: selectedPool.lottery_type,
+      })
       setSelectedPool(await api.poolDetail(selectedPool.id))
       setMessage('Jogos do bolao criados.')
     } catch (error) {
@@ -258,8 +310,12 @@ export default function Dashboard({ user }) {
 
       <section className="quick-actions-bar">
         <button className="action-pill" onClick={handleGenerate}>Gerar jogos</button>
-        <button className="action-pill secondary-button" onClick={handleExportCsv}>Exportar CSV</button>
-        <button className="action-pill secondary-button" onClick={handleSyncResults}>Atualizar resultados</button>
+        <button className="action-pill secondary-button" onClick={handleExportCsv}>
+          Exportar CSV
+        </button>
+        <button className="action-pill secondary-button" onClick={handleSyncResults}>
+          Atualizar resultados
+        </button>
       </section>
 
       <section className="dashboard-grid">
@@ -277,7 +333,10 @@ export default function Dashboard({ user }) {
           <div className="form-grid">
             <div className="field">
               <label>Tipo de loteria</label>
-              <select value={filters.lottery_type} onChange={(event) => changeLottery(event.target.value)}>
+              <select
+                value={filters.lottery_type}
+                onChange={(event) => changeLottery(event.target.value)}
+              >
                 <option value="lotofacil">Lotofacil</option>
                 <option value="quina">Quina</option>
                 <option value="megasena">Mega-Sena</option>
@@ -290,7 +349,9 @@ export default function Dashboard({ user }) {
                 value={filters.game_count}
                 min="1"
                 max="100"
-                onChange={(event) => setFilters({ ...filters, game_count: Number(event.target.value) })}
+                onChange={(event) =>
+                  setFilters({ ...filters, game_count: Number(event.target.value) })
+                }
               />
             </div>
             <div className="field">
@@ -373,12 +434,17 @@ export default function Dashboard({ user }) {
               history.map((game) => (
                 <article className="game-card-panel" key={game.id}>
                   <div className="row-between">
-                    <strong>#{game.id} · {formatLotteryName(game.lottery_type)}</strong>
-                    <button className="ghost-button" onClick={() => handleExportPdf(game.id)}>PDF</button>
+                    <strong>#{game.id} - {formatLotteryName(game.lottery_type)}</strong>
+                    <button className="ghost-button" onClick={() => handleExportPdf(game.id)}>
+                      PDF
+                    </button>
                   </div>
+                  <GameInsights game={game} />
                   <NumberBalls numbers={game.numbers} />
                   <small className="muted">
-                    Score {game.score} · soma {game.game_sum} · pares {game.even_count} · origem {game.source}
+                    Score {game.score} - soma {game.game_sum} - pares {game.even_count} -
+                    {' '}
+                    origem {game.source}
                   </small>
                 </article>
               ))
@@ -405,28 +471,39 @@ export default function Dashboard({ user }) {
                   {plan.features.map((feature) => <li key={feature}>{feature}</li>)}
                 </ul>
                 <small className="muted">
-                  Limite por lote: {plan.limits.max_games_per_batch} ·
+                  Limite por lote: {plan.limits.max_games_per_batch} -
                   {' '}
-                  {plan.limits.max_pools === 9999 ? 'Boloes ilimitados' : `${plan.limits.max_pools} boloes`}
+                  {plan.limits.max_pools === 9999
+                    ? 'Boloes ilimitados'
+                    : `${plan.limits.max_pools} boloes`}
                 </small>
                 <div className="actions">
-                  <button className="primary-button" onClick={() => handleActivatePlan(plan.slug)}>Ativar demo</button>
-                  <button className="secondary-button" onClick={() => handleCheckout(plan.slug, 'stripe')}>Checkout</button>
+                  <button className="primary-button" onClick={() => handleActivatePlan(plan.slug)}>
+                    Ativar demo
+                  </button>
+                  <button
+                    className="secondary-button"
+                    onClick={() => handleCheckout(plan.slug, 'stripe')}
+                  >
+                    Checkout
+                  </button>
                 </div>
               </div>
             ))}
           </div>
           <div className="subscriptions-list">
             <h4>Historico de assinatura</h4>
-            {subscriptions.length === 0
-              ? <p className="muted">Sem assinaturas registradas.</p>
-              : subscriptions.map((item) => (
+            {subscriptions.length === 0 ? (
+              <p className="muted">Sem assinaturas registradas.</p>
+            ) : (
+              subscriptions.map((item) => (
                 <div key={item.id} className="subscription-item">
                   <strong>{item.plan}</strong>
                   <span>{item.provider}</span>
                   <span>{item.status}</span>
                 </div>
-              ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -441,11 +518,19 @@ export default function Dashboard({ user }) {
             <div className="form-column">
               <div className="field">
                 <label>Nome</label>
-                <input value={poolForm.name} onChange={(event) => setPoolForm({ ...poolForm, name: event.target.value })} />
+                <input
+                  value={poolForm.name}
+                  onChange={(event) => setPoolForm({ ...poolForm, name: event.target.value })}
+                />
               </div>
               <div className="field">
                 <label>Loteria</label>
-                <select value={poolForm.lottery_type} onChange={(event) => setPoolForm({ ...poolForm, lottery_type: event.target.value })}>
+                <select
+                  value={poolForm.lottery_type}
+                  onChange={(event) =>
+                    setPoolForm({ ...poolForm, lottery_type: event.target.value })
+                  }
+                >
                   <option value="lotofacil">Lotofacil</option>
                   <option value="quina">Quina</option>
                   <option value="megasena">Mega-Sena</option>
@@ -453,14 +538,21 @@ export default function Dashboard({ user }) {
               </div>
               <div className="field">
                 <label>Descricao</label>
-                <input value={poolForm.description} onChange={(event) => setPoolForm({ ...poolForm, description: event.target.value })} />
+                <input
+                  value={poolForm.description}
+                  onChange={(event) =>
+                    setPoolForm({ ...poolForm, description: event.target.value })
+                  }
+                />
               </div>
               <div className="field">
                 <label>Valor da cota</label>
                 <input
                   type="number"
                   value={poolForm.quota_value}
-                  onChange={(event) => setPoolForm({ ...poolForm, quota_value: Number(event.target.value) })}
+                  onChange={(event) =>
+                    setPoolForm({ ...poolForm, quota_value: Number(event.target.value) })
+                  }
                 />
               </div>
               <button className="primary-button" onClick={handleCreatePool}>Criar bolao</button>
@@ -475,9 +567,13 @@ export default function Dashboard({ user }) {
                     <div className="game-card-panel" key={pool.id}>
                       <strong>{pool.name}</strong>
                       <p className="muted">
-                        {formatLotteryName(pool.lottery_type)} · {pool.members_count} membros · {pool.games_count} jogos
+                        {formatLotteryName(pool.lottery_type)} - {pool.members_count} membros -
+                        {' '}
+                        {pool.games_count} jogos
                       </p>
-                      <button className="ghost-button" onClick={() => openPool(pool.id)}>Abrir</button>
+                      <button className="ghost-button" onClick={() => openPool(pool.id)}>
+                        Abrir
+                      </button>
                     </div>
                   ))
                 )}
@@ -494,9 +590,17 @@ export default function Dashboard({ user }) {
                 </div>
               </div>
               <div className="pool-toolbar">
-                <input placeholder="email do membro" value={memberEmail} onChange={(event) => setMemberEmail(event.target.value)} />
-                <button className="secondary-button" onClick={handleAddMember}>Adicionar membro</button>
-                <button className="primary-button" onClick={handleGeneratePoolGames}>Gerar jogos do bolao</button>
+                <input
+                  placeholder="email do membro"
+                  value={memberEmail}
+                  onChange={(event) => setMemberEmail(event.target.value)}
+                />
+                <button className="secondary-button" onClick={handleAddMember}>
+                  Adicionar membro
+                </button>
+                <button className="primary-button" onClick={handleGeneratePoolGames}>
+                  Gerar jogos do bolao
+                </button>
               </div>
 
               <div className="split-layout">
@@ -540,7 +644,7 @@ export default function Dashboard({ user }) {
               <div className="games-grid">
                 {resultsHistory.map((item) => (
                   <div className="game-card-panel" key={`${item.lottery_type}-${item.contest}`}>
-                    <strong>{formatLotteryName(item.lottery_type)} · concurso {item.contest}</strong>
+                    <strong>{formatLotteryName(item.lottery_type)} - concurso {item.contest}</strong>
                     <NumberBalls numbers={item.numbers} />
                     <small className="muted">{item.draw_date || '--'}</small>
                   </div>
@@ -554,7 +658,7 @@ export default function Dashboard({ user }) {
                   <div className="game-card-panel" key={`${item.contest}-${index}`}>
                     <strong>Concurso {item.contest}</strong>
                     <NumberBalls numbers={item.numbers} />
-                    <small className="muted">{item.draw_date || '--'} · {item.source}</small>
+                    <small className="muted">{item.draw_date || '--'} - {item.source}</small>
                   </div>
                 ))}
               </div>
@@ -574,8 +678,9 @@ export default function Dashboard({ user }) {
               {games.map((game) => (
                 <div className="game-card-panel" key={game.id}>
                   <strong>{formatLotteryName(game.lottery_type)}</strong>
+                  <GameInsights game={game} />
                   <NumberBalls numbers={game.numbers} />
-                  <small className="muted">Score {game.score} · soma {game.game_sum}</small>
+                  <small className="muted">Score {game.score} - soma {game.game_sum}</small>
                 </div>
               ))}
             </div>
@@ -591,10 +696,22 @@ export default function Dashboard({ user }) {
               </div>
             </div>
             <div className="overview-grid">
-              <div className="overview-item"><span>Usuarios</span><strong>{adminMetrics.total_users}</strong></div>
-              <div className="overview-item"><span>Assinaturas ativas</span><strong>{adminMetrics.active_subscriptions}</strong></div>
-              <div className="overview-item"><span>Jogos</span><strong>{adminMetrics.total_games}</strong></div>
-              <div className="overview-item"><span>Boloes</span><strong>{adminMetrics.total_pools}</strong></div>
+              <div className="overview-item">
+                <span>Usuarios</span>
+                <strong>{adminMetrics.total_users}</strong>
+              </div>
+              <div className="overview-item">
+                <span>Assinaturas ativas</span>
+                <strong>{adminMetrics.active_subscriptions}</strong>
+              </div>
+              <div className="overview-item">
+                <span>Jogos</span>
+                <strong>{adminMetrics.total_games}</strong>
+              </div>
+              <div className="overview-item">
+                <span>Boloes</span>
+                <strong>{adminMetrics.total_pools}</strong>
+              </div>
             </div>
             <pre className="json-box">{JSON.stringify(adminMetrics.plan_breakdown, null, 2)}</pre>
           </div>

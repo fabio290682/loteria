@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String, func
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, func
 from sqlalchemy.orm import relationship
 
 from app.db.session import Base
@@ -15,6 +15,9 @@ class GeneratedGame(Base):
     even_count = Column(Integer, nullable=False)
     filters = Column(JSON, nullable=False)
     source = Column(String(50), nullable=False, default='manual')
+    ai_confidence = Column(Float, nullable=True)
+    ai_notes = Column(Text, nullable=True)
+    ai_provider_votes = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
