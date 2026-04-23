@@ -35,6 +35,26 @@ O backend nao roda no GitHub Pages. Publique a API separadamente em um servico c
 - Fly.io
 - VPS com Docker
 
+## Render
+
+O repositorio ja inclui `render.yaml` para subir:
+
+- banco Postgres gerenciado
+- backend `lotometrics-api`
+
+No Render:
+
+1. Crie um novo Blueprint
+2. Aponte para este repositorio GitHub
+3. Confirme os recursos do `render.yaml`
+4. Aguarde o deploy
+
+Depois copie a URL publica da API e configure no GitHub:
+
+```text
+VITE_API_URL=https://SUA-API.onrender.com
+```
+
 ## CORS
 
 No backend de producao, libere pelo menos:

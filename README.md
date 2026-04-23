@@ -32,6 +32,25 @@ Settings > Secrets and variables > Actions > Variables
 
 Sem essa variavel, o frontend cai no fallback local `http://localhost:8000`.
 
+## Backend em producao
+
+Para o SaaS funcionar de verdade no navegador, publique o backend com HTTPS.
+
+Este repositorio ja inclui um Blueprint do Render em `render.yaml`.
+
+Fluxo recomendado:
+
+1. Publicar `lotometrics-api` no Render usando `render.yaml`
+2. Copiar a URL publica gerada pelo backend
+3. Criar a variavel `VITE_API_URL` no GitHub com essa URL
+4. Manter `CORS_ORIGINS` liberando `https://fabio290682.github.io`
+
+Exemplo final:
+
+```text
+VITE_API_URL=https://lotometrics-api.onrender.com
+```
+
 ## Desenvolvimento local
 
 Frontend:

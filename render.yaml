@@ -1,0 +1,56 @@
+databases:
+  - name: lotometrics-db
+    plan: free
+    databaseName: loto
+    user: loto_user
+
+services:
+  - type: web
+    name: lotometrics-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerContext: ./backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_NAME
+        value: LotoMetrics API
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lotometrics-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: https://fabio290682.github.io,https://fabio290682.github.io/loteria
+      - key: RESULTS_PROVIDER
+        value: caixa
+      - key: CAIXA_RESULTS_URL
+        value: https://servicebus2.caixa.gov.br/portaldeloterias/api
+      - key: LOTERIAS_PUBLIC_URL
+        value: https://loterias.caixa.gov.br/Paginas/default.aspx
+      - key: PAYMENT_SUCCESS_URL
+        value: https://fabio290682.github.io/loteria/billing/success
+      - key: PAYMENT_CANCEL_URL
+        value: https://fabio290682.github.io/loteria/billing/cancel
+      - key: ENABLE_RESULT_JOBS
+        value: "true"
+      - key: RESULT_SYNC_LOTTERIES
+        value: megasena,lotofacil,quina
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STARTER
+        sync: false
+      - key: STRIPE_PRICE_PRO
+        sync: false
+      - key: STRIPE_PRICE_PREMIUM
+        sync: false
+      - key: MERCADO_PAGO_ACCESS_TOKEN
+        sync: false
