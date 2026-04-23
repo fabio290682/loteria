@@ -8,7 +8,9 @@ export default function App() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    if (authenticated) api.me().then(setUser).catch(() => {
+    if (!authenticated) return
+
+    api.me().then(setUser).catch(() => {
       localStorage.removeItem('token')
       setAuthenticated(false)
     })
@@ -25,7 +27,8 @@ export default function App() {
       <header className="hero">
         <div>
           <h1>LotoMetrics SaaS V3</h1>
-          <p>Planos com limites, bolões, cache de resultados, webhooks e painel admin.</p>
+          <p>Planos com limites, boloes, cache de resultados, webhooks e painel admin.</p>
+          {api.mode === 'demo' && <div className="demo-badge">Modo demo ativo para testes no navegador</div>}
           {user && <small>Logado como {user.name} · plano {user.plan}{user.is_admin ? ' · admin' : ''}</small>}
         </div>
         {authenticated && <button onClick={handleLogout}>Sair</button>}
