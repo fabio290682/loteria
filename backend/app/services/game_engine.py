@@ -3,6 +3,8 @@ from __future__ import annotations
 import random
 from typing import Any
 
+from app.services.ai_orchestrator import rerank_candidates_with_ai
+
 historical_draws = [
     [1, 4, 8, 12, 19, 25],
     [3, 7, 10, 14, 21, 24],
@@ -136,4 +138,4 @@ def generate_games(filters: dict[str, Any]) -> list[dict[str, Any]]:
             )
 
     results.sort(key=lambda item: item['score'], reverse=True)
-    return results
+    return rerank_candidates_with_ai(filters, results)

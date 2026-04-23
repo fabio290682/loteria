@@ -30,6 +30,11 @@ class Settings(BaseSettings):
 
     ENABLE_RESULT_JOBS: bool = True
     RESULT_SYNC_LOTTERIES: List[str] | str = ['megasena', 'lotofacil', 'quina']
+    ENABLE_AI_ANALYSIS: bool = False
+    AI_ANALYSIS_PROVIDER: str = 'n8n'
+    N8N_ANALYSIS_WEBHOOK_URL: str = ''
+    N8N_ANALYSIS_TIMEOUT_SECONDS: int = 20
+    AI_MIN_CONFIDENCE: float = 0.55
 
     @field_validator('CORS_ORIGINS', 'RESULT_SYNC_LOTTERIES', mode='before')
     @classmethod

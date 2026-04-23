@@ -1,0 +1,207 @@
+{
+  "name": "LotoMetrics AI Consensus",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "lotometrics-analysis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        220,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst candidates = body.candidates || [];\nconst filters = body.filters || {};\nconst compact = candidates.map((item, index) => ({\n  index,\n  numbers: item.numbers,\n  score: item.score,\n  sum: item.sum,\n  even_count: item.even_count,\n}));\nconst prompt = `Voce e um analista de loterias. Reordene os candidatos abaixo do melhor para o pior com foco em distribuicao, equilibrio, soma, paridade e coerencia estatistica. Responda apenas JSON com: recommended_order, confidence, notes.\\n\\nFiltros: ${JSON.stringify(filters)}\\n\\nCandidatos: ${JSON.stringify(compact)}`;\nreturn [{ json: { filters, candidates: compact, prompt } }];"
+      },
+      "id": "prepare-prompt",
+      "name": "Prepare Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "create",
+        "model": "gpt-4.1-mini",
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Responda apenas JSON valido."
+            },
+            {
+              "role": "user",
+              "content": "={{$json.prompt}}"
+            }
+          ]
+        },
+        "jsonOutput": true
+      },
+      "id": "openai-node",
+      "name": "OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        760,
+        180
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{$env.GEMINI_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"contents\":[{\"parts\":[{\"text\":\"Responda apenas JSON valido.\\n\\n\" + $json.prompt}]}]}"
+      },
+      "id": "gemini-node",
+      "name": "Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        760,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "position"
+      },
+      "id": "merge-node",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1030,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function safeParse(value) {\n  if (!value) return null;\n  if (typeof value === 'object') return value;\n  try { return JSON.parse(value); } catch (_) { return null; }\n}\n\nconst left = $input.item.json;\nconst openaiRaw = left?.message?.content || left?.choices?.[0]?.message?.content || left?.output_text || left;\nconst geminiRaw = $input.item.json_1?.candidates?.[0]?.content?.parts?.[0]?.text || $input.item.json_1;\nconst openai = safeParse(openaiRaw) || {};\nconst gemini = safeParse(geminiRaw) || {};\n\nconst openaiOrder = Array.isArray(openai.recommended_order) ? openai.recommended_order : [];\nconst geminiOrder = Array.isArray(gemini.recommended_order) ? gemini.recommended_order : [];\nconst source = openaiOrder.length ? openaiOrder : geminiOrder;\nconst sameTop = openaiOrder[0] !== undefined && openaiOrder[0] === geminiOrder[0];\nconst confidence = sameTop ? 0.82 : 0.61;\n\nreturn [{ json: {\n  recommended_order: source,\n  confidence,\n  notes: sameTop ? 'ChatGPT e Gemini concordaram no topo do ranking.' : 'Ranking retornado com consenso parcial.',\n  provider_votes: {\n    chatgpt: openai.notes || 'sem notas',\n    gemini: gemini.notes || 'sem notas'\n  }\n} }];"
+      },
+      "id": "consensus-node",
+      "name": "Consensus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}"
+      },
+      "id": "response-node",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consensus": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

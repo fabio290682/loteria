@@ -16,11 +16,36 @@ const defaultFilters = {
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.click()
   URL.revokeObjectURL(url)
+}
+
+function formatLotteryName(value) {
+  const map = {
+    lotofacil: 'Lotofacil',
+    quina: 'Quina',
+    megasena: 'Mega-Sena',
+  }
+  return map[value] || value
+}
+
+function formatCurrency(value) {
+  return `R$ ${Number(value).toFixed(2)}/mes`
+}
+
+function NumberBalls({ numbers }) {
+  return (
+    <div className="number-list">
+      {numbers.map((number) => (
+        <span key={number} className="ball">
+          {String(number).padStart(2, '0')}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 export default function Dashboard({ user }) {
@@ -37,63 +62,99 @@ export default function Dashboard({ user }) {
   const [adminMetrics, setAdminMetrics] = useState(null)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
-  const [poolForm, setPoolForm] = useState({ name: 'Bolão Principal', lottery_type: 'lotofacil', description: 'Grupo inicial', quota_value: 10 })
+  const [poolForm, setPoolForm] = useState({
+    name: 'Bolao Principal',
+    lottery_type: 'lotofacil',
+    description: 'Grupo inicial',
+    quota_value: 10,
+  })
   const [memberEmail, setMemberEmail] = useState('')
 
   const lotteryConfig = useMemo(() => ({
-    lotofacil: { total: 25, picks: 15, minSum: 120, maxSum: 220 },
-    quina: { total: 80, picks: 5, minSum: 80, maxSum: 250 },
-    megasena: { total: 60, picks: 6, minSum: 100, maxSum: 240 },
+    lotofacil: { total: 25, picks: 15, minSum: 120, maxSum: 220, accent: 'lime' },
+    quina: { total: 80, picks: 5, minSum: 80, maxSum: 250, accent: 'sky' },
+    megasena: { total: 60, picks: 6, minSum: 100, maxSum: 240, accent: 'amber' },
   }), [])
 
   const refreshAll = async (lotteryType = filters.lottery_type) => {
     try {
       const requests = [
-        api.history(), api.plans(), api.mySubscriptions(), api.latestResult(lotteryType), api.resultsHistory(lotteryType, 5), api.cachedResults(lotteryType), api.pools(), api.me()
+        api.history(),
+        api.plans(),
+        api.mySubscriptions(),
+        api.latestResult(lotteryType),
+        api.resultsHistory(lotteryType, 5),
+        api.cachedResults(lotteryType),
+        api.pools(),
+        api.me(),
       ]
       const [hist, plansRes, subs, latestRes, latestHistory, cached, poolsRes, me] = await Promise.all(requests)
-      setHistory(hist); setPlans(plansRes); setSubscriptions(subs); setLatest(latestRes); setResultsHistory(latestHistory.items || []); setCachedResults(cached); setPools(poolsRes)
+      setHistory(hist)
+      setPlans(plansRes)
+      setSubscriptions(subs)
+      setLatest(latestRes)
+      setResultsHistory(latestHistory.items || [])
+      setCachedResults(cached)
+      setPools(poolsRes)
       if (me?.is_admin) {
         const metrics = await api.adminMetrics()
         setAdminMetrics(metrics)
+      } else {
+        setAdminMetrics(null)
       }
     } catch (error) {
       setMessage(`Erro ao carregar dashboard: ${error.message}`)
     }
   }
 
-  useEffect(() => { refreshAll() }, [])
+  useEffect(() => {
+    refreshAll()
+  }, [])
 
   const changeLottery = async (lotteryType) => {
-    const conf = lotteryConfig[lotteryType]
-    setFilters((prev) => ({ ...prev, lottery_type: lotteryType, total_numbers: conf.total, picks: conf.picks, min_sum: conf.minSum, max_sum: conf.maxSum }))
+    const config = lotteryConfig[lotteryType]
+    setFilters((current) => ({
+      ...current,
+      lottery_type: lotteryType,
+      total_numbers: config.total,
+      picks: config.picks,
+      min_sum: config.minSum,
+      max_sum: config.maxSum,
+    }))
     await refreshAll(lotteryType)
   }
 
   const handleGenerate = async () => {
-    setLoading(true); setMessage('')
+    setLoading(true)
+    setMessage('')
     try {
       const generated = await api.generateAndSave(filters)
       setGames(generated)
       await refreshAll(filters.lottery_type)
-      setMessage(`Foram gerados ${generated.length} jogos com persistência no banco.`)
+      setMessage(`${generated.length} jogo(s) gerado(s) e salvo(s) com sucesso.`)
     } catch (error) {
       setMessage(`Falha ao gerar jogos: ${error.message}`)
-    } finally { setLoading(false) }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCreatePool = async () => {
     try {
       await api.createPool(poolForm)
-      setMessage('Bolão criado com sucesso.')
+      setMessage('Bolao criado com sucesso.')
       await refreshAll(filters.lottery_type)
     } catch (error) {
-      setMessage(`Erro ao criar bolão: ${error.message}`)
+      setMessage(`Erro ao criar bolao: ${error.message}`)
     }
   }
 
   const openPool = async (id) => {
-    try { setSelectedPool(await api.poolDetail(id)) } catch (error) { setMessage(error.message) }
+    try {
+      setSelectedPool(await api.poolDetail(id))
+    } catch (error) {
+      setMessage(error.message)
+    }
   }
 
   const handleAddMember = async () => {
@@ -102,8 +163,10 @@ export default function Dashboard({ user }) {
       await api.addPoolMember(selectedPool.id, { email: memberEmail, quota_count: 1 })
       setSelectedPool(await api.poolDetail(selectedPool.id))
       setMemberEmail('')
-      setMessage('Membro adicionado ao bolão.')
-    } catch (error) { setMessage(`Erro ao adicionar membro: ${error.message}`) }
+      setMessage('Membro adicionado ao bolao.')
+    } catch (error) {
+      setMessage(`Erro ao adicionar membro: ${error.message}`)
+    }
   }
 
   const handleGeneratePoolGames = async () => {
@@ -111,105 +174,432 @@ export default function Dashboard({ user }) {
     try {
       await api.generatePoolGames(selectedPool.id, { ...filters, lottery_type: selectedPool.lottery_type })
       setSelectedPool(await api.poolDetail(selectedPool.id))
-      setMessage('Jogos do bolão criados.')
-    } catch (error) { setMessage(`Erro ao gerar jogos do bolão: ${error.message}`) }
+      setMessage('Jogos do bolao criados.')
+    } catch (error) {
+      setMessage(`Erro ao gerar jogos do bolao: ${error.message}`)
+    }
   }
 
-  const handleActivatePlan = async (plan) => { try { await api.activatePlan(plan); await refreshAll(filters.lottery_type); setMessage(`Plano ${plan} ativado.`) } catch (error) { setMessage(error.message) } }
-  const handleCheckout = async (plan, provider) => { try { const res = await api.checkout({ plan, provider }); setMessage(`Checkout ${res.status}: ${res.checkout_url}`); await refreshAll(filters.lottery_type) } catch (error) { setMessage(error.message) } }
-  const handleExportCsv = async () => { try { downloadBlob(await api.exportCsv(), 'historico-jogos.csv') } catch (error) { setMessage(error.message) } }
-  const handleExportPdf = async (id) => { try { downloadBlob(await api.exportPdf(id), `jogo-${id}.pdf`) } catch (error) { setMessage(error.message) } }
-  const handleSyncResults = async () => { try { await api.syncResults(filters.lottery_type); await refreshAll(filters.lottery_type); setMessage('Cache de resultados sincronizado.') } catch (error) { setMessage(`Erro ao sincronizar: ${error.message}`) } }
+  const handleActivatePlan = async (plan) => {
+    try {
+      await api.activatePlan(plan)
+      await refreshAll(filters.lottery_type)
+      setMessage(`Plano ${plan} ativado.`)
+    } catch (error) {
+      setMessage(error.message)
+    }
+  }
+
+  const handleCheckout = async (plan, provider) => {
+    try {
+      const response = await api.checkout({ plan, provider })
+      setMessage(`Checkout ${response.status}: ${response.checkout_url}`)
+      await refreshAll(filters.lottery_type)
+    } catch (error) {
+      setMessage(error.message)
+    }
+  }
+
+  const handleExportCsv = async () => {
+    try {
+      downloadBlob(await api.exportCsv(), 'historico-jogos.csv')
+    } catch (error) {
+      setMessage(error.message)
+    }
+  }
+
+  const handleExportPdf = async (id) => {
+    try {
+      downloadBlob(await api.exportPdf(id), `jogo-${id}.pdf`)
+    } catch (error) {
+      setMessage(error.message)
+    }
+  }
+
+  const handleSyncResults = async () => {
+    try {
+      await api.syncResults(filters.lottery_type)
+      await refreshAll(filters.lottery_type)
+      setMessage('Cache de resultados sincronizado.')
+    } catch (error) {
+      setMessage(`Erro ao sincronizar: ${error.message}`)
+    }
+  }
+
+  const quickStats = [
+    { label: 'Jogos salvos', value: history.length },
+    { label: 'Assinaturas', value: subscriptions.length },
+    { label: 'Boloes', value: pools.length },
+    { label: 'Resultados em cache', value: cachedResults.length },
+  ]
 
   return (
-    <section className="dashboard-grid">
-      <div className="card full-width">
-        <h2>Versão 3 comercial</h2>
-        <p>Planos com limites, bolões, cache local de resultados, webhooks e painel admin-ready.</p>
-        {message && <div className="message">{message}</div>}
-      </div>
+    <section className="dashboard-shell">
+      <section className="overview-strip card">
+        <div>
+          <p className="eyebrow">Painel principal</p>
+          <h2>Operacao comercial pronta para demonstracao</h2>
+          <p className="muted section-copy">
+            Explore geracao, historico, resultados, planos e recursos administrativos em um fluxo
+            mais organizado para teste e apresentacao.
+          </p>
+        </div>
+        <div className="overview-grid">
+          {quickStats.map((item) => (
+            <div key={item.label} className="overview-item">
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <div className="card">
-        <h3>Gerador V3</h3>
-        <label>Tipo de loteria</label>
-        <select value={filters.lottery_type} onChange={(e) => changeLottery(e.target.value)}>
-          <option value="lotofacil">Lotofácil</option><option value="quina">Quina</option><option value="megasena">Mega-Sena</option>
-        </select>
-        <label>Jogos</label>
-        <input type="number" value={filters.game_count} min="1" max="100" onChange={(e) => setFilters({ ...filters, game_count: Number(e.target.value) })} />
-        <label>Dezenas por jogo</label>
-        <input type="number" value={filters.picks} min="5" max={filters.total_numbers} onChange={(e) => setFilters({ ...filters, picks: Number(e.target.value) })} />
-        <label>Soma mínima</label>
-        <input type="number" value={filters.min_sum} onChange={(e) => setFilters({ ...filters, min_sum: Number(e.target.value) })} />
-        <label>Soma máxima</label>
-        <input type="number" value={filters.max_sum} onChange={(e) => setFilters({ ...filters, max_sum: Number(e.target.value) })} />
-        <button onClick={handleGenerate} disabled={loading}>{loading ? 'Gerando...' : 'Gerar e salvar'}</button>
-        <small className="muted">Plano atual: {user?.plan || 'starter'}</small>
-      </div>
+      {message && <div className="message-banner">{message}</div>}
 
-      <div className="card">
-        <div className="row-between"><h3>Último resultado</h3><button onClick={handleSyncResults}>Sincronizar cache</button></div>
-        {latest ? <>
-          <div className="result-title">{latest.lottery_type} · concurso {latest.contest}</div>
-          <div className="number-list">{latest.numbers.map((n) => <span key={n} className="ball">{String(n).padStart(2, '0')}</span>)}</div>
-          <p>Data: {latest.draw_date || '—'}</p><p>Estimativa: {latest.estimated_prize || '—'}</p><p className="muted">Fonte: {latest.source}</p>
-        </> : <p>Carregando...</p>}
-      </div>
+      <section className="quick-actions-bar">
+        <button className="action-pill" onClick={handleGenerate}>Gerar jogos</button>
+        <button className="action-pill secondary-button" onClick={handleExportCsv}>Exportar CSV</button>
+        <button className="action-pill secondary-button" onClick={handleSyncResults}>Atualizar resultados</button>
+      </section>
 
-      <div className="card full-width">
-        <h3>Histórico salvo</h3>
-        <div className="row-between"><span>{history.length} registros</span><button onClick={handleExportCsv}>Exportar CSV</button></div>
-        <div className="games-grid">{history.length === 0 ? <p>Sem histórico ainda.</p> : history.map((game) => (
-          <div className="game-item" key={game.id}><div className="row-between"><strong>#{game.id} · {game.lottery_type}</strong><button onClick={() => handleExportPdf(game.id)}>PDF</button></div>
-          <div className="number-list">{game.numbers.map((n) => <span key={n} className="ball">{String(n).padStart(2, '0')}</span>)}</div>
-          <small>Score {game.score} · soma {game.game_sum} · pares {game.even_count} · origem {game.source}</small></div>
-        ))}</div>
-      </div>
-
-      <div className="card full-width">
-        <h3>Assinaturas</h3>
-        <div className="plans-grid">{plans.map((plan) => (
-          <div className="plan-card" key={plan.slug}><h4>{plan.name}</h4><div className="price">R$ {plan.price_brl_monthly.toFixed(2)}/mês</div><ul>{plan.features.map((feature) => <li key={feature}>{feature}</li>)}</ul>
-          <small className="muted">Limites: {plan.limits.max_games_per_batch} por geração · {plan.limits.max_pools === 9999 ? 'bolões ilimitados' : `${plan.limits.max_pools} bolões`}</small>
-          <div className="actions"><button onClick={() => handleActivatePlan(plan.slug)}>Ativar demo</button><button onClick={() => handleCheckout(plan.slug, 'stripe')}>Checkout Stripe</button></div></div>
-        ))}</div>
-        <div className="subscriptions-list"><h4>Meu histórico de assinatura</h4>{subscriptions.length === 0 ? <p>Sem assinaturas registradas.</p> : subscriptions.map((s) => <div key={s.id} className="subscription-item">{s.plan} · {s.provider} · {s.status}</div>)}</div>
-      </div>
-
-      <div className="card full-width">
-        <h3>Bolões</h3>
-        <div className="grid-2">
-          <div>
-            <label>Nome</label><input value={poolForm.name} onChange={(e) => setPoolForm({ ...poolForm, name: e.target.value })} />
-            <label>Loteria</label><select value={poolForm.lottery_type} onChange={(e) => setPoolForm({ ...poolForm, lottery_type: e.target.value })}><option value="lotofacil">Lotofácil</option><option value="quina">Quina</option><option value="megasena">Mega-Sena</option></select>
-            <label>Valor da cota</label><input type="number" value={poolForm.quota_value} onChange={(e) => setPoolForm({ ...poolForm, quota_value: Number(e.target.value) })} />
-            <button onClick={handleCreatePool}>Criar bolão</button>
+      <section className="dashboard-grid">
+        <div className="card hero-card">
+          <div className="hero-card-top">
+            <div>
+              <p className="eyebrow">Gerador inteligente</p>
+              <h3>Monte jogos com estrategia e controle</h3>
+            </div>
+            <span className={`lottery-chip ${lotteryConfig[filters.lottery_type].accent}`}>
+              {formatLotteryName(filters.lottery_type)}
+            </span>
           </div>
-          <div>
-            <div className="games-grid">{pools.length === 0 ? <p>Nenhum bolão criado.</p> : pools.map((pool) => <div className="game-item" key={pool.id}><strong>{pool.name}</strong><p>{pool.lottery_type} · {pool.members_count} membros · {pool.games_count} jogos</p><button onClick={() => openPool(pool.id)}>Abrir</button></div>)}</div>
+
+          <div className="form-grid">
+            <div className="field">
+              <label>Tipo de loteria</label>
+              <select value={filters.lottery_type} onChange={(event) => changeLottery(event.target.value)}>
+                <option value="lotofacil">Lotofacil</option>
+                <option value="quina">Quina</option>
+                <option value="megasena">Mega-Sena</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Jogos</label>
+              <input
+                type="number"
+                value={filters.game_count}
+                min="1"
+                max="100"
+                onChange={(event) => setFilters({ ...filters, game_count: Number(event.target.value) })}
+              />
+            </div>
+            <div className="field">
+              <label>Dezenas por jogo</label>
+              <input
+                type="number"
+                value={filters.picks}
+                min="5"
+                max={filters.total_numbers}
+                onChange={(event) => setFilters({ ...filters, picks: Number(event.target.value) })}
+              />
+            </div>
+            <div className="field">
+              <label>Soma minima</label>
+              <input
+                type="number"
+                value={filters.min_sum}
+                onChange={(event) => setFilters({ ...filters, min_sum: Number(event.target.value) })}
+              />
+            </div>
+            <div className="field">
+              <label>Soma maxima</label>
+              <input
+                type="number"
+                value={filters.max_sum}
+                onChange={(event) => setFilters({ ...filters, max_sum: Number(event.target.value) })}
+              />
+            </div>
+          </div>
+
+          <div className="generator-footer">
+            <button className="primary-button" onClick={handleGenerate} disabled={loading}>
+              {loading ? 'Gerando...' : 'Gerar e salvar'}
+            </button>
+            <div className="mini-note">Plano atual: {user?.plan || 'starter'}</div>
           </div>
         </div>
-        {selectedPool && <div className="pool-detail"><h4>{selectedPool.name}</h4><p>{selectedPool.description || 'Sem descrição'}</p>
-          <div className="row-between"><input placeholder="email do membro" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} /><button onClick={handleAddMember}>Adicionar membro</button><button onClick={handleGeneratePoolGames}>Gerar jogos do bolão</button></div>
-          <div className="games-grid">{selectedPool.members.map((m) => <div className="game-item" key={m.id}>{m.email} · {m.role}</div>)}</div>
-          <div className="games-grid">{selectedPool.games.map((g) => <div className="game-item" key={g.id}><div className="number-list">{g.numbers.map((n) => <span key={n} className="ball">{String(n).padStart(2, '0')}</span>)}</div><small>Score {g.score}</small></div>)}</div>
-        </div>}
-      </div>
 
-      <div className="card full-width">
-        <h3>Resultados e cache</h3>
-        <div className="grid-2">
-          <div><h4>Histórico remoto</h4><div className="games-grid">{resultsHistory.map((item) => <div className="game-item" key={`${item.lottery_type}-${item.contest}`}><strong>{item.lottery_type} · concurso {item.contest}</strong><div className="number-list">{item.numbers.map((n) => <span key={n} className="ball">{String(n).padStart(2, '0')}</span>)}</div><small>{item.draw_date || '—'}</small></div>)}</div></div>
-          <div><h4>Cache local</h4><div className="games-grid">{cachedResults.map((item, idx) => <div className="game-item" key={`${item.contest}-${idx}`}><strong>Concurso {item.contest}</strong><div className="number-list">{item.numbers.map((n) => <span key={n} className="ball">{String(n).padStart(2, '0')}</span>)}</div><small>{item.draw_date || '—'} · {item.source}</small></div>)}</div></div>
+        <div className="card result-card">
+          <div className="row-between">
+            <div>
+              <p className="eyebrow">Resultado do dia</p>
+              <h3>Ultimo concurso</h3>
+            </div>
+            <button className="secondary-button" onClick={handleSyncResults}>Sincronizar</button>
+          </div>
+          {latest ? (
+            <>
+              <div className="result-headline">
+                <strong>{formatLotteryName(latest.lottery_type)}</strong>
+                <span>Concurso {latest.contest}</span>
+              </div>
+              <NumberBalls numbers={latest.numbers} />
+              <div className="result-meta">
+                <span>Data: {latest.draw_date || '--'}</span>
+                <span>Fonte: {latest.source}</span>
+              </div>
+              <div className="prize-panel">
+                <span>Premio estimado</span>
+                <strong>{latest.estimated_prize || '--'}</strong>
+              </div>
+            </>
+          ) : (
+            <p className="muted">Carregando resultados...</p>
+          )}
         </div>
-      </div>
 
-      {adminMetrics && <div className="card full-width"><h3>Painel admin</h3><div className="plans-grid">
-        <div className="plan-card"><h4>Usuários</h4><div className="price">{adminMetrics.total_users}</div></div>
-        <div className="plan-card"><h4>Assinaturas ativas</h4><div className="price">{adminMetrics.active_subscriptions}</div></div>
-        <div className="plan-card"><h4>Jogos</h4><div className="price">{adminMetrics.total_games}</div></div>
-        <div className="plan-card"><h4>Bolões</h4><div className="price">{adminMetrics.total_pools}</div></div>
-      </div><pre className="json-box">{JSON.stringify(adminMetrics.plan_breakdown, null, 2)}</pre></div>}
+        <div className="card full-width">
+          <div className="section-header">
+            <div>
+              <p className="eyebrow">Ultimos gerados</p>
+              <h3>Historico salvo</h3>
+            </div>
+            <span className="section-counter">{history.length} registros</span>
+          </div>
+          <div className="games-grid">
+            {history.length === 0 ? (
+              <p className="muted">Sem historico ainda.</p>
+            ) : (
+              history.map((game) => (
+                <article className="game-card-panel" key={game.id}>
+                  <div className="row-between">
+                    <strong>#{game.id} · {formatLotteryName(game.lottery_type)}</strong>
+                    <button className="ghost-button" onClick={() => handleExportPdf(game.id)}>PDF</button>
+                  </div>
+                  <NumberBalls numbers={game.numbers} />
+                  <small className="muted">
+                    Score {game.score} · soma {game.game_sum} · pares {game.even_count} · origem {game.source}
+                  </small>
+                </article>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="card full-width">
+          <div className="section-header">
+            <div>
+              <p className="eyebrow">Monetizacao</p>
+              <h3>Planos e assinatura</h3>
+            </div>
+          </div>
+          <div className="plans-grid">
+            {plans.map((plan) => (
+              <div className="plan-card premium-card" key={plan.slug}>
+                <div className="row-between">
+                  <h4>{plan.name}</h4>
+                  <span className="plan-pill">{plan.slug}</span>
+                </div>
+                <div className="price">{formatCurrency(plan.price_brl_monthly)}</div>
+                <ul className="feature-list">
+                  {plan.features.map((feature) => <li key={feature}>{feature}</li>)}
+                </ul>
+                <small className="muted">
+                  Limite por lote: {plan.limits.max_games_per_batch} ·
+                  {' '}
+                  {plan.limits.max_pools === 9999 ? 'Boloes ilimitados' : `${plan.limits.max_pools} boloes`}
+                </small>
+                <div className="actions">
+                  <button className="primary-button" onClick={() => handleActivatePlan(plan.slug)}>Ativar demo</button>
+                  <button className="secondary-button" onClick={() => handleCheckout(plan.slug, 'stripe')}>Checkout</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="subscriptions-list">
+            <h4>Historico de assinatura</h4>
+            {subscriptions.length === 0
+              ? <p className="muted">Sem assinaturas registradas.</p>
+              : subscriptions.map((item) => (
+                <div key={item.id} className="subscription-item">
+                  <strong>{item.plan}</strong>
+                  <span>{item.provider}</span>
+                  <span>{item.status}</span>
+                </div>
+              ))}
+          </div>
+        </div>
+
+        <div className="card full-width">
+          <div className="section-header">
+            <div>
+              <p className="eyebrow">Colaboracao</p>
+              <h3>Boloes</h3>
+            </div>
+          </div>
+          <div className="split-layout">
+            <div className="form-column">
+              <div className="field">
+                <label>Nome</label>
+                <input value={poolForm.name} onChange={(event) => setPoolForm({ ...poolForm, name: event.target.value })} />
+              </div>
+              <div className="field">
+                <label>Loteria</label>
+                <select value={poolForm.lottery_type} onChange={(event) => setPoolForm({ ...poolForm, lottery_type: event.target.value })}>
+                  <option value="lotofacil">Lotofacil</option>
+                  <option value="quina">Quina</option>
+                  <option value="megasena">Mega-Sena</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Descricao</label>
+                <input value={poolForm.description} onChange={(event) => setPoolForm({ ...poolForm, description: event.target.value })} />
+              </div>
+              <div className="field">
+                <label>Valor da cota</label>
+                <input
+                  type="number"
+                  value={poolForm.quota_value}
+                  onChange={(event) => setPoolForm({ ...poolForm, quota_value: Number(event.target.value) })}
+                />
+              </div>
+              <button className="primary-button" onClick={handleCreatePool}>Criar bolao</button>
+            </div>
+
+            <div>
+              <div className="games-grid">
+                {pools.length === 0 ? (
+                  <p className="muted">Nenhum bolao criado.</p>
+                ) : (
+                  pools.map((pool) => (
+                    <div className="game-card-panel" key={pool.id}>
+                      <strong>{pool.name}</strong>
+                      <p className="muted">
+                        {formatLotteryName(pool.lottery_type)} · {pool.members_count} membros · {pool.games_count} jogos
+                      </p>
+                      <button className="ghost-button" onClick={() => openPool(pool.id)}>Abrir</button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {selectedPool && (
+            <div className="pool-detail">
+              <div className="section-header">
+                <div>
+                  <h4>{selectedPool.name}</h4>
+                  <p className="muted">{selectedPool.description || 'Sem descricao'}</p>
+                </div>
+              </div>
+              <div className="pool-toolbar">
+                <input placeholder="email do membro" value={memberEmail} onChange={(event) => setMemberEmail(event.target.value)} />
+                <button className="secondary-button" onClick={handleAddMember}>Adicionar membro</button>
+                <button className="primary-button" onClick={handleGeneratePoolGames}>Gerar jogos do bolao</button>
+              </div>
+
+              <div className="split-layout">
+                <div>
+                  <h4>Membros</h4>
+                  <div className="games-grid">
+                    {selectedPool.members.map((member) => (
+                      <div className="game-card-panel" key={member.id}>
+                        <strong>{member.email}</strong>
+                        <small className="muted">{member.role}</small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4>Jogos do bolao</h4>
+                  <div className="games-grid">
+                    {selectedPool.games.map((game) => (
+                      <div className="game-card-panel" key={game.id}>
+                        <NumberBalls numbers={game.numbers} />
+                        <small className="muted">Score {game.score}</small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="card full-width">
+          <div className="section-header">
+            <div>
+              <p className="eyebrow">Resultados</p>
+              <h3>Historico remoto e cache local</h3>
+            </div>
+          </div>
+          <div className="split-layout">
+            <div>
+              <h4>Historico remoto</h4>
+              <div className="games-grid">
+                {resultsHistory.map((item) => (
+                  <div className="game-card-panel" key={`${item.lottery_type}-${item.contest}`}>
+                    <strong>{formatLotteryName(item.lottery_type)} · concurso {item.contest}</strong>
+                    <NumberBalls numbers={item.numbers} />
+                    <small className="muted">{item.draw_date || '--'}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4>Cache local</h4>
+              <div className="games-grid">
+                {cachedResults.map((item, index) => (
+                  <div className="game-card-panel" key={`${item.contest}-${index}`}>
+                    <strong>Concurso {item.contest}</strong>
+                    <NumberBalls numbers={item.numbers} />
+                    <small className="muted">{item.draw_date || '--'} · {item.source}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {games.length > 0 && (
+          <div className="card full-width">
+            <div className="section-header">
+              <div>
+                <p className="eyebrow">Ultima rodada</p>
+                <h3>Jogos gerados agora</h3>
+              </div>
+            </div>
+            <div className="games-grid">
+              {games.map((game) => (
+                <div className="game-card-panel" key={game.id}>
+                  <strong>{formatLotteryName(game.lottery_type)}</strong>
+                  <NumberBalls numbers={game.numbers} />
+                  <small className="muted">Score {game.score} · soma {game.game_sum}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {adminMetrics && (
+          <div className="card full-width admin-card">
+            <div className="section-header">
+              <div>
+                <p className="eyebrow">Admin</p>
+                <h3>Painel executivo</h3>
+              </div>
+            </div>
+            <div className="overview-grid">
+              <div className="overview-item"><span>Usuarios</span><strong>{adminMetrics.total_users}</strong></div>
+              <div className="overview-item"><span>Assinaturas ativas</span><strong>{adminMetrics.active_subscriptions}</strong></div>
+              <div className="overview-item"><span>Jogos</span><strong>{adminMetrics.total_games}</strong></div>
+              <div className="overview-item"><span>Boloes</span><strong>{adminMetrics.total_pools}</strong></div>
+            </div>
+            <pre className="json-box">{JSON.stringify(adminMetrics.plan_breakdown, null, 2)}</pre>
+          </div>
+        )}
+      </section>
     </section>
   )
 }

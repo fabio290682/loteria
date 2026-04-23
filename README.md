@@ -51,6 +51,22 @@ Exemplo final:
 VITE_API_URL=https://lotometrics-api.onrender.com
 ```
 
+## Analise com IA via n8n
+
+O backend tambem pode enviar os jogos candidatos para um webhook do `n8n` e pedir uma segunda analise com `ChatGPT` e `Gemini`.
+
+Documentacao:
+
+```text
+docs/N8N_AI_ANALYSIS.md
+```
+
+Uso recomendado:
+
+- motor estatistico local gera candidatos
+- `n8n` chama `ChatGPT` + `Gemini`
+- o backend aplica reranking somente quando houver confianca minima
+
 ## Desenvolvimento local
 
 Frontend:
