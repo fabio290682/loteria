@@ -42,6 +42,16 @@ services:
         value: "true"
       - key: RESULT_SYNC_LOTTERIES
         value: megasena,lotofacil,quina
+      - key: ENABLE_AI_ANALYSIS
+        value: "false"
+      - key: AI_ANALYSIS_PROVIDER
+        value: n8n
+      - key: N8N_ANALYSIS_WEBHOOK_URL
+        sync: false
+      - key: N8N_ANALYSIS_TIMEOUT_SECONDS
+        value: "20"
+      - key: AI_MIN_CONFIDENCE
+        value: "0.55"
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET

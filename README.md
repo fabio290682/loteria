@@ -51,6 +51,12 @@ Exemplo final:
 VITE_API_URL=https://lotometrics-api.onrender.com
 ```
 
+Blueprint direto do Render:
+
+```text
+https://dashboard.render.com/blueprint/new?repo=https://github.com/fabio290682/loteria
+```
+
 ## Analise com IA via n8n
 
 O backend tambem pode enviar os jogos candidatos para um webhook do `n8n` e pedir uma segunda analise com `ChatGPT` e `Gemini`.

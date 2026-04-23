@@ -42,6 +42,12 @@ O repositorio ja inclui `render.yaml` para subir:
 - banco Postgres gerenciado
 - backend `lotometrics-api`
 
+Blueprint direto:
+
+```text
+https://dashboard.render.com/blueprint/new?repo=https://github.com/fabio290682/loteria
+```
+
 No Render:
 
 1. Crie um novo Blueprint
@@ -53,6 +59,16 @@ Depois copie a URL publica da API e configure no GitHub:
 
 ```text
 VITE_API_URL=https://SUA-API.onrender.com
+```
+
+Se quiser ativar a camada de IA depois do backend estar no ar:
+
+```text
+ENABLE_AI_ANALYSIS=true
+AI_ANALYSIS_PROVIDER=n8n
+N8N_ANALYSIS_WEBHOOK_URL=https://SEU-N8N/webhook/lotometrics-analysis
+N8N_ANALYSIS_TIMEOUT_SECONDS=20
+AI_MIN_CONFIDENCE=0.55
 ```
 
 ## CORS
