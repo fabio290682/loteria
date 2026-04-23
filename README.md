@@ -1,20 +1,57 @@
 # LotoMetrics SaaS V3
 
-Base comercial de uma SaaS de apoio estatístico para jogos de loteria.
+Base comercial de uma SaaS de apoio estatistico para jogos de loteria.
 
-## O que entrou na V3
-- autenticação com perfil admin
-- limites por plano no backend
-- checkout e webhook preparados
-- bolões com membros e geração de jogos por grupo
-- cache local de resultados e job de sincronização
-- painel admin com métricas
-- exportação CSV e PDF
+## Estrutura
 
-## Aviso importante
-Este projeto é uma ferramenta de apoio estatístico e heurístico. Não garante acerto, lucro ou previsão real de sorteios.
+- `frontend/`: app React + Vite publicado no GitHub Pages
+- `backend/`: API FastAPI
+- `deploy/`: notas de deploy em producao
 
-## Rodando com Docker
+## GitHub Pages
+
+O repositiorio esta configurado para publicar o frontend no GitHub Pages via GitHub Actions.
+
+URL esperada:
+
+```text
+https://fabio290682.github.io/loteria/
+```
+
+Antes do site funcionar com dados reais, configure a variavel do repositorio:
+
+```text
+VITE_API_URL=https://SEU_BACKEND_PUBLICO
+```
+
+Caminho no GitHub:
+
+```text
+Settings > Secrets and variables > Actions > Variables
+```
+
+Sem essa variavel, o frontend cai no fallback local `http://localhost:8000`.
+
+## Desenvolvimento local
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Backend:
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+## Docker
+
 ```bash
 docker compose up --build
 ```
@@ -25,57 +62,6 @@ Backend: `http://localhost:8000`
 
 Swagger: `http://localhost:8000/docs`
 
-## Usuário admin
-Cadastre um usuário com email terminando em `@admin.local` para habilitar o painel admin.
+## Observacao
 
-Exemplo:
-- email: `owner@admin.local`
-- senha: `123456`
-
-## Sincronizar resultados manualmente
-No container do backend:
-```bash
-python app/jobs/sync_results.py
-```
-
-Ou via API admin:
-```bash
-POST /results/sync/megasena
-```
-
-## Fluxo de cobrança
-1. cliente escolhe plano
-2. `/subscriptions/checkout` cria referência
-3. gateway chama `/subscriptions/webhook/{provider}`
-4. assinatura muda para `active`
-5. plano do usuário é atualizado
-
-## Próxima sprint sugerida
-- webhook Stripe real com assinatura recorrente
-- ingestão histórica completa em banco
-- conciliação de pagamentos
-- convite por email para bolões
-- ranking de desempenho por estratégia
-
-
-## Deploy pronto
-Esta versão já inclui:
-- `docker-compose.prod.yml`
-- `frontend/Dockerfile` com build estático + Nginx
-- `backend/Dockerfile` pronto para produção
-- `backend/.env.production.example`
-- `.env.production.example`
-- `deploy/DEPLOY.md`
-
-### Subida em produção
-```bash
-cp .env.production.example .env.production
-cp backend/.env.production.example backend/.env.production
-# edite os arquivos com seus domínios e segredos
-
-docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
-```
-
-Depois disso:
-- frontend em `http://SEU_IP/`
-- backend em `http://SEU_IP:8000/docs`
+GitHub Pages hospeda apenas o frontend estatico. Para login, dashboard e integracoes funcionarem, o backend precisa estar publicado com HTTPS e CORS liberado para `https://fabio290682.github.io`.
