@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lotometrics-web
+  namespace: lotometrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lotometrics-web
+  template:
+    metadata:
+      labels:
+        app: lotometrics-web
+    spec:
+      containers:
+        - name: web
+          image: lotometrics-web:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lotometrics-web
+  namespace: lotometrics
+spec:
+  selector:
+    app: lotometrics-web
+  ports:
+    - port: 80
+      targetPort: 80

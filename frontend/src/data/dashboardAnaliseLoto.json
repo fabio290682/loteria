@@ -1,0 +1,20 @@
+{
+  "resumo": [
+    { "titulo": "Jogos analisados", "valor": "12480", "detalhe": "+8,4% na semana" }
+  ],
+  "dezenas_quentes": [
+    { "dezena": "37", "freq": 12, "tendencia": "+21%" }
+  ],
+  "dezenas_atrasadas": [
+    { "dezena": "08", "atraso": 9 }
+  ],
+  "concursos": [
+    { "concurso": "2891", "acertos": "4 pontos", "estrategia": "Mista quente/fria", "score": "82%" }
+  ],
+  "jogos_sugeridos": [
+    ["05", "11", "23", "37", "49", "54"]
+  ],
+  "resultados": [
+    { "dezenas": ["05", "11", "23", "37", "49", "54"] }
+  ]
+}

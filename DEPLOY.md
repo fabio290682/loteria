@@ -90,3 +90,24 @@ https://fabio290682.github.io/loteria
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
 ```
+
+## Kubernetes
+
+O repositorio agora tambem inclui manifests em `k8s/` para:
+
+- `frontend`
+- `backend`
+- `postgres`
+- `ingress`
+
+Passo rapido:
+
+```bash
+kubectl apply -k k8s
+```
+
+Ajustes esperados antes de aplicar:
+
+- trocar as imagens `lotometrics-api:latest` e `lotometrics-web:latest`
+- definir segredos reais em `k8s/secret.example.yaml`
+- ajustar o host do `ingress`

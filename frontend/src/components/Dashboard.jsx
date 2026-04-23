@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
+import tecLogo from '../assets/tec.png'
+import DashboardAnaliseLoto from './DashboardAnaliseLoto'
 
 const defaultFilters = {
   lottery_type: 'lotofacil',
@@ -293,10 +295,30 @@ export default function Dashboard({ user }) {
 
   return (
     <section className="dashboard-shell">
+      <section className="brand-dashboard card">
+        <div className="brand-dashboard-main">
+          <img src={tecLogo} alt="3brasil Tech" className="brand-dashboard-logo" />
+          <div>
+            <p className="eyebrow">3brasil Tech</p>
+            <h2>LotoMetrics SaaS Dashboard</h2>
+            <p className="muted section-copy">
+              Central operacional com geracao, monetizacao, resultados, IA e gestao da experiencia
+              comercial do produto.
+            </p>
+          </div>
+        </div>
+        <div className="brand-dashboard-badges">
+          <span className="brand-dashboard-pill">Marca oficial aplicada</span>
+          <span className="brand-dashboard-pill">Nome do SaaS destacado</span>
+        </div>
+      </section>
+
+      <DashboardAnaliseLoto onRefresh={handleGenerate} onExport={handleExportCsv} />
+
       <section className="overview-strip card">
         <div>
           <p className="eyebrow">Painel principal</p>
-          <h2>Operacao comercial pronta para demonstracao</h2>
+          <h2>Operacao comercial pronta para demonstracao da 3brasil Tech</h2>
           <p className="muted section-copy">
             Explore geracao, historico, resultados, planos e recursos administrativos em um fluxo
             mais organizado para teste e apresentacao.

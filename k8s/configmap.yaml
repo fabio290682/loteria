@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lotometrics-config
+  namespace: lotometrics
+data:
+  APP_NAME: "LotoMetrics API"
+  APP_ENV: "production"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
+  RESULTS_PROVIDER: "caixa"
+  CAIXA_RESULTS_URL: "https://servicebus2.caixa.gov.br/portaldeloterias/api"
+  LOTERIAS_PUBLIC_URL: "https://loterias.caixa.gov.br/Paginas/default.aspx"
+  CORS_ORIGINS: "https://fabio290682.github.io,https://fabio290682.github.io/loteria,https://lotometrics.local"
+  PAYMENT_SUCCESS_URL: "https://lotometrics.local/billing/success"
+  PAYMENT_CANCEL_URL: "https://lotometrics.local/billing/cancel"
+  ENABLE_RESULT_JOBS: "true"
+  RESULT_SYNC_LOTTERIES: "megasena,lotofacil,quina"
+  ENABLE_AI_ANALYSIS: "false"
+  AI_ANALYSIS_PROVIDER: "n8n"
+  N8N_ANALYSIS_TIMEOUT_SECONDS: "20"
+  AI_MIN_CONFIDENCE: "0.55"
+  VITE_API_URL: "https://lotometrics.local/api"

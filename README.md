@@ -103,6 +103,23 @@ Backend: `http://localhost:8000`
 
 Swagger: `http://localhost:8000/docs`
 
+## Kubernetes
+
+Tambem existe uma base pronta em `k8s/` para rodar o projeto em cluster com:
+
+- frontend
+- backend
+- postgres
+- ingress
+
+Guia rapido:
+
+```bash
+kubectl apply -k k8s
+```
+
+Detalhes em `k8s/README.md`.
+
 ## Observacao
 
 GitHub Pages hospeda apenas o frontend estatico. Para login, dashboard e integracoes funcionarem, o backend precisa estar publicado com HTTPS e CORS liberado para `https://fabio290682.github.io`.
