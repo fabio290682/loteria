@@ -52,12 +52,17 @@ export default function AuthBox({ onAuth }) {
         <p className="eyebrow">Experiencia pronta para teste</p>
         <h2>Entre no SaaS e navegue como se fosse producao</h2>
         <p className="auth-copy">
-          Use as contas de demonstração para explorar geracao de jogos, assinatura, resultados,
+          Use as contas de demonstracao para explorar geracao de jogos, assinatura, resultados,
           cache local e painel admin sem depender do backend publicado.
         </p>
         <div className="demo-user-list">
           {DEMO_USERS.map((item) => (
-            <button key={item.email} className="demo-user" type="button" onClick={() => loginAsDemo(item)}>
+            <button
+              key={item.email}
+              className="demo-user"
+              type="button"
+              onClick={() => loginAsDemo(item)}
+            >
               <strong>{item.label}</strong>
               <span>{item.email}</span>
             </button>
@@ -94,16 +99,36 @@ export default function AuthBox({ onAuth }) {
           {mode === 'register' && (
             <div className="field">
               <label>Nome</label>
-              <input name="name" placeholder="Seu nome" value={form.name} onChange={handleChange} required />
+              <input
+                name="name"
+                placeholder="Seu nome"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
             </div>
           )}
           <div className="field">
             <label>E-mail</label>
-            <input name="email" type="email" placeholder="voce@empresa.com" value={form.email} onChange={handleChange} required />
+            <input
+              name="email"
+              type="email"
+              placeholder="voce@empresa.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="field">
             <label>Senha</label>
-            <input name="password" type="password" placeholder="Sua senha" value={form.password} onChange={handleChange} required />
+            <input
+              name="password"
+              type="password"
+              placeholder="Sua senha"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
           </div>
           <button type="submit" className="primary-button">
             {mode === 'login' ? 'Entrar agora' : 'Cadastrar'}

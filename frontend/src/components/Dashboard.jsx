@@ -284,6 +284,12 @@ export default function Dashboard({ user }) {
     { label: 'Boloes', value: pools.length },
     { label: 'Resultados em cache', value: cachedResults.length },
   ]
+  const aiGames = history.filter((game) => game.source === 'ai-ranked')
+  const aiAverageConfidence = aiGames.length
+    ? Math.round(
+        (aiGames.reduce((total, game) => total + (game.ai_confidence || 0), 0) / aiGames.length) * 100,
+      )
+    : 0
 
   return (
     <section className="dashboard-shell">
@@ -419,6 +425,30 @@ export default function Dashboard({ user }) {
           )}
         </div>
 
+        <div className="card result-card">
+          <div className="row-between">
+            <div>
+              <p className="eyebrow">Analise IA</p>
+              <h3>Consenso aplicado</h3>
+            </div>
+            <span className="section-counter">{aiGames.length} jogos validados</span>
+          </div>
+          <div className="analysis-stats">
+            <div className="analysis-stat">
+              <span>Jogos com consenso</span>
+              <strong>{aiGames.length}</strong>
+            </div>
+            <div className="analysis-stat">
+              <span>Confianca media</span>
+              <strong>{aiAverageConfidence}%</strong>
+            </div>
+          </div>
+          <p className="muted">
+            O motor local continua gerando candidatos e a camada de IA destaca apenas os jogos que
+            receberam sinal suficiente de consenso.
+          </p>
+        </div>
+
         <div className="card full-width">
           <div className="section-header">
             <div>
@@ -502,6 +532,37 @@ export default function Dashboard({ user }) {
                   <span>{item.provider}</span>
                   <span>{item.status}</span>
                 </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="card full-width">
+          <div className="section-header">
+            <div>
+              <p className="eyebrow">Analise IA</p>
+              <h3>Jogos com justificativa de ranking</h3>
+            </div>
+            <span className="section-counter">{aiGames.length} itens</span>
+          </div>
+          <div className="games-grid">
+            {aiGames.length === 0 ? (
+              <p className="muted">
+                Gere novos jogos para visualizar candidatos aprovados pela camada de IA.
+              </p>
+            ) : (
+              aiGames.slice(0, 6).map((game) => (
+                <article className="game-card-panel ai-featured-card" key={`ai-${game.id}`}>
+                  <div className="row-between">
+                    <strong>#{game.id} - {formatLotteryName(game.lottery_type)}</strong>
+                    <span className="status-badge ai">Top IA</span>
+                  </div>
+                  <NumberBalls numbers={game.numbers} />
+                  <small className="muted">
+                    Score {game.score} - soma {game.game_sum} - pares {game.even_count}
+                  </small>
+                  <GameInsights game={game} />
+                </article>
               ))
             )}
           </div>
