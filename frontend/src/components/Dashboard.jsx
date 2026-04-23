@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
 import tecLogo from '../assets/tec.png'
 import DashboardAnaliseLoto from './DashboardAnaliseLoto'
+import NumerosQuentes from './NumerosQuentes'
 
 const defaultFilters = {
   lottery_type: 'lotofacil',
@@ -312,6 +313,8 @@ export default function Dashboard({ user }) {
           <span className="brand-dashboard-pill">Nome do SaaS destacado</span>
         </div>
       </section>
+
+      <NumerosQuentes />
 
       <DashboardAnaliseLoto onRefresh={handleGenerate} onExport={handleExportCsv} />
 

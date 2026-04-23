@@ -897,6 +897,652 @@ label {
   color: var(--muted);
 }
 
+/* ── Brand inline lockup (paineis de analise) ────────── */
+.brand-inline-lockup {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.brand-inline-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 5px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+  flex-shrink: 0;
+}
+
+.brand-inline-tagline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.brand-inline-name {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--blue-soft);
+  letter-spacing: 0.04em;
+}
+
+.brand-inline-product {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.26);
+  color: #fcd34d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(96, 184, 240, 0.1);
+  border: 1px solid rgba(96, 184, 240, 0.2);
+  color: var(--blue-soft);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+/* ── Frequency bar ───────────────────────────────────── */
+.freq-bar-track,
+.atraso-meter {
+  position: relative;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  flex: 1;
+  min-width: 60px;
+}
+
+.freq-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2b8ed4, #60b8f0);
+  transition: width 0.4s ease;
+}
+
+.atraso-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  transition: width 0.4s ease;
+}
+
+.atraso-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+}
+
+.analysis-list-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 56px;
+}
+
+.analysis-list-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.dezena-num {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 1.1rem;
+}
+
+.analysis-trend.danger {
+  color: #f87171;
+}
+
+.dashboard-analise-wrap {
+  display: grid;
+  gap: 18px;
+}
+
+/* ── Probabilidades ──────────────────────────────────── */
+.prob-section {
+  background:
+    radial-gradient(circle at top left, rgba(245, 158, 11, 0.1), transparent 28%),
+    linear-gradient(135deg, rgba(10, 22, 40, 0.98), rgba(8, 18, 36, 0.94));
+}
+
+.prob-comparativo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.prob-resumo-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(7, 17, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prob-resumo-card.amber { border-color: rgba(245, 158, 11, 0.22); }
+.prob-resumo-card.lime  { border-color: rgba(74, 222, 128, 0.22); }
+.prob-resumo-card.sky   { border-color: rgba(56, 189, 248, 0.22); }
+
+.prob-resumo-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.prob-resumo-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prob-resumo-stats span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.prob-resumo-stats strong {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+}
+
+.prob-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.prob-tab {
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.prob-tab.amber.active {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.32);
+  color: #fcd34d;
+}
+
+.prob-tab.lime.active {
+  background: rgba(74, 222, 128, 0.14);
+  border-color: rgba(74, 222, 128, 0.28);
+  color: #86efac;
+}
+
+.prob-tab.sky.active {
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.28);
+  color: #7dd3fc;
+}
+
+.prob-table-wrap {
+  overflow-x: auto;
+}
+
+.prob-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prob-table th {
+  padding: 12px 14px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prob-table td {
+  padding: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.prob-row.top td { background: rgba(245, 158, 11, 0.05); }
+.prob-row.mid td { background: rgba(56, 189, 248, 0.04); }
+
+.prob-nome {
+  display: block;
+  font-weight: 700;
+}
+
+.prob-premio-min {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.prob-acertos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 800;
+}
+
+.prob-num {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  color: #d7e3fb;
+}
+
+.prob-odds {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 700;
+  color: #fcd34d;
+  white-space: nowrap;
+}
+
+.prob-col-bar {
+  min-width: 120px;
+}
+
+.odds-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.odds-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f59e0b, #60b8f0);
+  transition: width 0.4s ease;
+}
+
+.prob-table tfoot td {
+  padding: 14px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prob-foot-total {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.prob-nota {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(96, 184, 240, 0.06);
+  border: 1px solid rgba(96, 184, 240, 0.14);
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.prob-nota strong {
+  color: var(--blue-soft);
+}
+
+/* ── Heatmap numeros quentes ─────────────────────────── */
+.heat-section {
+  background:
+    radial-gradient(circle at bottom right, rgba(239, 68, 68, 0.08), transparent 32%),
+    radial-gradient(circle at top left, rgba(43, 142, 212, 0.1), transparent 28%),
+    linear-gradient(135deg, rgba(10, 22, 40, 0.98), rgba(8, 18, 36, 0.94));
+}
+
+.heat-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.heat-meta {
+  margin-left: auto;
+  font-size: 0.82rem;
+}
+
+.heat-top-toggle.active {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.32);
+  color: #fcd34d;
+}
+
+.heat-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── Heat grid ───────────────────────────────────────── */
+.heat-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 10), 1fr);
+  gap: 8px;
+}
+
+.heat-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.heat-cell:hover {
+  transform: scale(1.12);
+  z-index: 2;
+  position: relative;
+}
+
+.heat-selected {
+  border-color: #fff !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+  transform: scale(1.12);
+  z-index: 2;
+  position: relative;
+}
+
+/* Escala de calor: 0=glacial … 5=muito quente */
+.heat-0 { background: rgba(56, 189, 248, 0.12); color: #7dd3fc; }
+.heat-1 { background: rgba(56, 189, 248, 0.26); color: #38bdf8; }
+.heat-2 { background: rgba(99, 102, 241, 0.28); color: #a5b4fc; }
+.heat-3 { background: rgba(245, 158, 11, 0.24); color: #fcd34d; }
+.heat-4 { background: rgba(249, 115, 22, 0.36); color: #fb923c; }
+.heat-5 { background: rgba(239, 68, 68, 0.42); color: #fca5a5; box-shadow: 0 0 14px rgba(239, 68, 68, 0.28); }
+
+/* ── Legenda ─────────────────────────────────────────── */
+.heat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(7, 17, 31, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.heat-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.heat-legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* reutiliza as classes heat-N para os dots */
+.heat-legend-dot.heat-0 { background: rgba(56, 189, 248, 0.4); }
+.heat-legend-dot.heat-1 { background: #38bdf8; }
+.heat-legend-dot.heat-2 { background: #818cf8; }
+.heat-legend-dot.heat-3 { background: #f59e0b; }
+.heat-legend-dot.heat-4 { background: #f97316; }
+.heat-legend-dot.heat-5 { background: #ef4444; }
+
+/* ── Painel lateral ──────────────────────────────────── */
+.heat-side {
+  display: grid;
+  gap: 16px;
+}
+
+.heat-detalhe,
+.heat-detalhe-empty {
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(7, 17, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.heat-detalhe-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.heat-detalhe-num {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.heat-detalhe h3 {
+  margin: 0 0 6px;
+  font-family: "Sora", "Segoe UI", sans-serif;
+}
+
+.heat-label-badge {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.heat-label-badge.heat-5 { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
+.heat-label-badge.heat-4 { background: rgba(249, 115, 22, 0.18); color: #fdba74; }
+.heat-label-badge.heat-3 { background: rgba(245, 158, 11, 0.14); color: #fcd34d; }
+.heat-label-badge.heat-2 { background: rgba(99, 102, 241, 0.14); color: #c7d2fe; }
+.heat-label-badge.heat-1 { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
+.heat-label-badge.heat-0 { background: rgba(56, 189, 248, 0.08); color: #bae6fd; }
+
+.heat-detalhe-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.heat-detalhe-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 32, 64, 0.6);
+  border: 1px solid rgba(96, 184, 240, 0.1);
+}
+
+.heat-detalhe-stats span {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.heat-detalhe-stats strong {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-size: 1rem;
+}
+
+.heat-detalhe-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+}
+
+/* ── Mini bar ────────────────────────────────────────── */
+.mini-bar-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3b82f6, #f97316, #ef4444);
+  transition: width 0.4s ease;
+}
+
+/* ── Picks e ranking ─────────────────────────────────── */
+.heat-recomendados,
+.heat-dist {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(7, 17, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.heat-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.heat-pick-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+
+.heat-pick-ball:hover { transform: scale(1.15); }
+
+.heat-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.heat-dist-row:last-child { border-bottom: none; }
+
+.heat-dist-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.heat-dist-label {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.heat-dist-row strong {
+  font-family: "Sora", "Segoe UI", sans-serif;
+}
+
+/* ── Top list (vista ranking) ────────────────────────── */
+.heat-top-list {
+  display: grid;
+  gap: 10px;
+}
+
+.heat-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(7, 17, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.heat-rank-item:hover { background: rgba(15, 32, 64, 0.86); }
+
+.heat-rank-pos {
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-weight: 700;
+  min-width: 26px;
+}
+
+.heat-rank-ball {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.heat-rank-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.heat-rank-score {
+  font-family: "Sora", "Segoe UI", sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #fcd34d;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 980px) {
   .hero-panel,
   .brand-dashboard,
@@ -906,7 +1552,9 @@ label {
   .dashboard-grid,
   .split-layout,
   .form-grid,
-  .overview-grid {
+  .overview-grid,
+  .prob-comparativo,
+  .prob-resumo-stats {
     grid-template-columns: 1fr;
   }
 
@@ -934,5 +1582,32 @@ label {
   .brand-dashboard-logo {
     width: 88px;
     height: 88px;
+  }
+
+  .prob-col-bar {
+    display: none;
+  }
+
+  .brand-inline-lockup {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .brand-inline-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .heat-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .heat-side {
+    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+  }
+
+  .heat-meta {
+    display: none;
   }
 }

@@ -10,7 +10,9 @@ __pycache__/
 !.env.production.example
 node_modules/
 frontend/dist/
-.venv/
 .vscode/
 .idea/
 .DS_Store
+.venv/
+venv/
+.history/

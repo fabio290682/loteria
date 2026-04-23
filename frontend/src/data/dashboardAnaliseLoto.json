@@ -1,20 +1,51 @@
 {
   "resumo": [
-    { "titulo": "Jogos analisados", "valor": "12480", "detalhe": "+8,4% na semana" }
+    { "titulo": "Concursos analisados", "valor": "3.284", "detalhe": "+12 na semana" },
+    { "titulo": "Dezenas monitoradas", "valor": "60", "detalhe": "Mega-Sena completo" },
+    { "titulo": "Taxa de acerto 4+", "valor": "8,4%", "detalhe": "vs media 6,1%" },
+    { "titulo": "Jogos gerados", "valor": "12.480", "detalhe": "+8,4% na semana" }
   ],
   "dezenas_quentes": [
-    { "dezena": "37", "freq": 12, "tendencia": "+21%" }
+    { "dezena": "10", "freq": 48, "tendencia": "+31%" },
+    { "dezena": "53", "freq": 45, "tendencia": "+28%" },
+    { "dezena": "05", "freq": 43, "tendencia": "+24%" },
+    { "dezena": "37", "freq": 42, "tendencia": "+21%" },
+    { "dezena": "23", "freq": 41, "tendencia": "+19%" },
+    { "dezena": "44", "freq": 39, "tendencia": "+17%" },
+    { "dezena": "18", "freq": 37, "tendencia": "+14%" },
+    { "dezena": "02", "freq": 36, "tendencia": "+12%" }
   ],
   "dezenas_atrasadas": [
-    { "dezena": "08", "atraso": 9 }
+    { "dezena": "08", "atraso": 14 },
+    { "dezena": "31", "atraso": 12 },
+    { "dezena": "47", "atraso": 11 },
+    { "dezena": "59", "atraso": 10 },
+    { "dezena": "16", "atraso": 9 },
+    { "dezena": "27", "atraso": 8 },
+    { "dezena": "42", "atraso": 7 },
+    { "dezena": "03", "atraso": 6 }
   ],
   "concursos": [
-    { "concurso": "2891", "acertos": "4 pontos", "estrategia": "Mista quente/fria", "score": "82%" }
+    { "concurso": "2891", "acertos": "4 pontos", "estrategia": "Quente + atrasada", "score": "82%" },
+    { "concurso": "2890", "acertos": "3 pontos", "estrategia": "So quentes", "score": "61%" },
+    { "concurso": "2889", "acertos": "5 pontos", "estrategia": "Mista equilibrada", "score": "94%" },
+    { "concurso": "2888", "acertos": "2 pontos", "estrategia": "Aleatoria", "score": "38%" },
+    { "concurso": "2887", "acertos": "4 pontos", "estrategia": "Quente + atrasada", "score": "77%" },
+    { "concurso": "2886", "acertos": "3 pontos", "estrategia": "So atrasadas", "score": "54%" }
   ],
   "jogos_sugeridos": [
-    ["05", "11", "23", "37", "49", "54"]
+    ["05", "10", "23", "37", "44", "53"],
+    ["02", "10", "18", "37", "44", "59"],
+    ["05", "08", "23", "31", "44", "53"],
+    ["02", "10", "23", "31", "47", "53"],
+    ["05", "18", "23", "37", "53", "59"],
+    ["08", "10", "27", "37", "42", "53"]
   ],
   "resultados": [
-    { "dezenas": ["05", "11", "23", "37", "49", "54"] }
+    { "dezenas": [5, 10, 23, 37, 44, 53] },
+    { "dezenas": [2, 18, 31, 42, 47, 59] },
+    { "dezenas": [3, 8, 16, 27, 37, 44] },
+    { "dezenas": [10, 18, 23, 31, 53, 59] },
+    { "dezenas": [2, 5, 10, 44, 47, 53] }
   ]
 }
