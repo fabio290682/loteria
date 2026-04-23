@@ -25,7 +25,25 @@ Backend: `http://localhost:8000`
 
 Swagger: `http://localhost:8000/docs`
 
+## Kubernetes
+
+Tambem existe uma base pronta em `k8s/` para rodar o projeto em cluster com:
+
+- frontend
+- backend
+- postgres
+- ingress
+
+Guia rapido:
+
+```bash
+kubectl apply -k k8s
+```
+
+Detalhes em `k8s/README.md`.
+
 ## Usuário admin
+
 Cadastre um usuário com email terminando em `@admin.local` para habilitar o painel admin.
 
 Exemplo:
