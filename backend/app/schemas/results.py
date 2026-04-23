@@ -17,3 +17,12 @@ class LotteryResult(BaseModel):
 class LotteryHistoryResponse(BaseModel):
     lottery_type: str
     items: List[LotteryResult]
+
+
+# Backward-compatible aliases used by the existing API routes.
+class LatestResultResponse(LotteryResult):
+    pass
+
+
+class ResultHistoryResponse(LotteryHistoryResponse):
+    pass
