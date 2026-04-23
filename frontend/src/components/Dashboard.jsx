@@ -3,6 +3,7 @@ import { api } from '../services/api'
 import tecLogo from '../assets/tec.png'
 import DashboardAnaliseLoto from './DashboardAnaliseLoto'
 import NumerosQuentes from './NumerosQuentes'
+import IAAnalise from './IAAnalise'
 
 const defaultFilters = {
   lottery_type: 'lotofacil',
@@ -315,6 +316,8 @@ export default function Dashboard({ user }) {
       </section>
 
       <NumerosQuentes />
+
+      <IAAnalise jogos={history} lotteryType={filters.lottery_type} />
 
       <DashboardAnaliseLoto onRefresh={handleGenerate} onExport={handleExportCsv} />
 

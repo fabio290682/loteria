@@ -396,6 +396,42 @@ async function mockRequest(path, options = {}) {
     return { status: 'ok' }
   }
 
+  if (path === '/ai/analyze' && options.method === 'POST') {
+    const { lottery_type = 'megasena', candidates = [] } = payload || {}
+    if (candidates.length < 2) throw new Error('Envie pelo menos 2 jogos candidatos.')
+    await new Promise((resolve) => setTimeout(resolve, 1400))
+    const notas = [
+      'Excelente distribuicao com dezenas quentes e atrasadas. Soma dentro da faixa ideal.',
+      'Bom equilibrio par/impar. Leve concentracao na faixa media, ainda assim aprovado.',
+      'Distribuicao razoavel mas ausencia de dezenas atrasadas de alto impacto.',
+      'Score competitivo. Sequencia de 2 consecutivos aceitavel para esta loteria.',
+      'Aprovado com ressalva: maioria das dezenas na faixa baixa.',
+      'Marginal — soma levemente fora da faixa estatistica ideal.',
+    ]
+    const confs = [0.91, 0.84, 0.77, 0.71, 0.65, 0.58]
+    const estrategias = {
+      megasena: 'Priorize jogos com dezenas espalhadas entre as tres faixas com pelo menos 3 dezenas quentes e 1 atrasada. Soma ideal entre 130-200.',
+      lotofacil: 'Equilibre pares e impares (7/8 ou 8/7) e inclua dezenas da faixa 01-09. Cobertura uniforme das 25 dezenas favorece acertos multiplos.',
+      quina: 'Combine 1 dezena baixa (1-20), 2 medias (21-60) e 2 altas (61-80) para cobertura maxima do universo de 80 dezenas.',
+    }
+    const estrategia = estrategias[lottery_type] || estrategias.megasena
+    const games = [...candidates]
+      .sort(() => Math.random() - 0.5)
+      .map((g, i) => ({
+        ...g,
+        source: 'ai-ranked',
+        ai_confidence: confs[i] ?? 0.60,
+        ai_notes: notas[i] ?? '',
+        ai_provider_votes: { claude: estrategia },
+      }))
+    return {
+      games,
+      estrategia,
+      alerta: 'Evite concentrar mais de 4 dezenas na mesma faixa numerica.',
+      provider: 'claude (demo)',
+    }
+  }
+
   if (path === '/admin/metrics') {
     const user = requireDemoUser()
     if (!user.is_admin) throw new Error('Acesso restrito ao admin')
@@ -472,6 +508,7 @@ export const api = {
   addPoolMember: (id, payload) => request(`/pools/${id}/members`, { method: 'POST', body: JSON.stringify(payload) }),
   generatePoolGames: (id, payload) => request(`/pools/${id}/generate-games`, { method: 'POST', body: JSON.stringify(payload) }),
   adminMetrics: () => request('/admin/metrics'),
+  analyzeWithAI: (payload) => request('/ai/analyze', { method: 'POST', body: JSON.stringify(payload) }),
 }
 
 export default api

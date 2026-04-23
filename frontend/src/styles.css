@@ -1211,6 +1211,167 @@ label {
   color: var(--blue-soft);
 }
 
+/* ── IA Analise ──────────────────────────────────────── */
+.ia-section {
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(74, 222, 128, 0.07), transparent 28%),
+    linear-gradient(135deg, rgba(10, 22, 40, 0.98), rgba(8, 18, 36, 0.94));
+}
+
+.ia-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ia-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  color: #fff !important;
+  white-space: nowrap;
+}
+
+.ia-loading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ia-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #fff;
+  animation: ia-pulse 1.2s infinite ease-in-out;
+}
+
+.ia-dot:nth-child(2) { animation-delay: 0.2s; }
+.ia-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes ia-pulse {
+  0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+  40%           { transform: scale(1);   opacity: 1;   }
+}
+
+.ia-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.ia-empty-icon { opacity: 0.35; }
+
+/* resultado */
+.ia-resultado { display: grid; gap: 18px; }
+
+.ia-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ia-overview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+}
+
+.ia-overview-item span { font-size: 0.78rem; color: var(--muted); }
+.ia-overview-item strong { font-family: "Sora", "Segoe UI", sans-serif; font-size: 1.1rem; }
+
+.ia-estrategia-banner {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+}
+
+.ia-estrategia-banner p { margin: 6px 0 0; line-height: 1.6; }
+
+.ia-alerta {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  color: #fcd34d;
+  font-size: 0.9rem;
+}
+
+.ia-games-list { display: grid; gap: 14px; }
+
+/* cards de jogo */
+.ia-game-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(7, 17, 31, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ia-game-card.ia-top { border-color: rgba(74, 222, 128, 0.24); background: linear-gradient(180deg, rgba(19, 48, 46, 0.72), rgba(7, 17, 31, 0.88)); }
+.ia-game-card.ia-mid { border-color: rgba(245, 158, 11, 0.2); }
+.ia-game-card.ia-low { border-color: rgba(248, 113, 113, 0.16); }
+
+.ia-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.ia-rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99, 102, 241, 0.18);
+  color: #a5b4fc;
+  font-weight: 800;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.ia-card-meta { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.ia-card-meta strong { font-family: "Sora", "Segoe UI", sans-serif; }
+
+.conf-ring { flex-shrink: 0; }
+
+.ia-nota {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  color: #d7e3fb;
+  line-height: 1.6;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(15, 32, 64, 0.6);
+  border-left: 3px solid rgba(99, 102, 241, 0.4);
+}
+
+.ia-estrategia {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.16);
+}
+
+.ia-estrategia p { margin: 6px 0 0; font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+.ball-highlight {
+  background: rgba(99, 102, 241, 0.3) !important;
+  border-color: rgba(165, 180, 252, 0.5) !important;
+  color: #e0e7ff !important;
+}
+
 /* ── Heatmap numeros quentes ─────────────────────────── */
 .heat-section {
   background:

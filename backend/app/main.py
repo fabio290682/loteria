@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 
 from app.api.admin import router as admin_router
+from app.api.ai_analysis import router as ai_router
 from app.api.analytics import router as analytics_router
 from app.api.auth import router as auth_router
 from app.api.dashboard import router as dashboard_router
@@ -61,6 +62,7 @@ def healthz():
 
 
 app.include_router(auth_router)
+app.include_router(ai_router)
 app.include_router(analytics_router)
 app.include_router(dashboard_router)
 app.include_router(games_router)
