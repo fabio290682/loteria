@@ -12,3 +12,5 @@ alembic
 httpx
 reportlab
 email-validator
+scikit-learn
+numpy

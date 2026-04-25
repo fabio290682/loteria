@@ -12,6 +12,7 @@ from app.api.games import router as games_router
 from app.api.pools import router as pools_router
 from app.api.results import router as results_router
 from app.api.subscriptions import router as subscriptions_router
+from app.ml import router as ml_router
 from app.core.config import get_settings
 from app.db.session import Base, engine
 import app.models  # noqa: F401
@@ -71,3 +72,4 @@ app.include_router(subscriptions_router)
 app.include_router(exports_router)
 app.include_router(pools_router)
 app.include_router(admin_router)
+app.include_router(ml_router)

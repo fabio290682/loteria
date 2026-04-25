@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import random
-from typing import Any
+from typing import Any, Optional
+
+from sqlalchemy.orm import Session
 
 from app.services.ai_orchestrator import rerank_candidates_with_ai
 
-historical_draws = [
+# Dados de fallback usados quando não há histórico no banco
+_FALLBACK_DRAWS = [
     [1, 4, 8, 12, 19, 25],
     [3, 7, 10, 14, 21, 24],
     [2, 6, 11, 16, 20, 23],
@@ -19,6 +22,19 @@ historical_draws = [
     [3, 8, 12, 14, 21, 24],
     [5, 6, 9, 16, 18, 22],
 ]
+
+
+def _load_draws(db: Optional[Session], lottery_type: str, total_numbers: int) -> list[list[int]]:
+    """Carrega histórico do banco; usa fallback se indisponível."""
+    if db is None:
+        return _FALLBACK_DRAWS
+
+    try:
+        from app.ml.service import _fetch_draws_from_db
+        draws = _fetch_draws_from_db(db, lottery_type, limit=300)  # type: ignore[arg-type]
+        return draws if draws else _FALLBACK_DRAWS
+    except Exception:
+        return _FALLBACK_DRAWS
 
 
 def range_list(start: int, end: int) -> list[int]:
@@ -65,27 +81,32 @@ def has_long_sequence(numbers: list[int], max_allowed: int = 2) -> bool:
 
 
 def score_game(game: list[int], freq: dict[int, int], delays: dict[int, int]) -> int:
-    frequency_score = sum(freq.get(n, 0) for n in game)
-    delay_score = sum(delays.get(n, 0) for n in game)
-    balance_penalty = abs(count_even(game) - len(game) / 2) * 2
+    frequency_score  = sum(freq.get(n, 0) for n in game)
+    delay_score      = sum(delays.get(n, 0) for n in game)
+    balance_penalty  = abs(count_even(game) - len(game) / 2) * 2
     sequence_penalty = 10 if has_long_sequence(game, 2) else 0
     return int(frequency_score + delay_score - balance_penalty - sequence_penalty)
 
 
-def generate_games(filters: dict[str, Any]) -> list[dict[str, Any]]:
-    total_numbers = filters['total_numbers']
-    picks = filters['picks']
-    game_count = filters['game_count']
-    even_target = filters.get('even_target')
-    min_sum = filters['min_sum']
-    max_sum = filters['max_sum']
+def generate_games(
+    filters: dict[str, Any],
+    db: Optional[Session] = None,
+) -> list[dict[str, Any]]:
+    total_numbers   = filters['total_numbers']
+    picks           = filters['picks']
+    game_count      = filters['game_count']
+    even_target     = filters.get('even_target')
+    min_sum         = filters['min_sum']
+    max_sum         = filters['max_sum']
     avoid_sequences = filters['avoid_sequences']
-    favor_delayed = filters['favor_delayed']
-    favor_frequent = filters['favor_frequent']
+    favor_delayed   = filters['favor_delayed']
+    favor_frequent  = filters['favor_frequent']
+    lottery_type    = filters.get('lottery_type', 'megasena')
 
     universe = range_list(1, total_numbers)
-    freq = count_frequency(historical_draws, total_numbers)
-    delays = calculate_delay(historical_draws, total_numbers)
+    draws    = _load_draws(db, lottery_type, total_numbers)
+    freq     = count_frequency(draws, total_numbers)
+    delays   = calculate_delay(draws, total_numbers)
 
     weighted_pool: list[int] = []
     for n in universe:
@@ -112,8 +133,8 @@ def generate_games(filters: dict[str, Any]) -> list[dict[str, Any]]:
             if len(draft) == picks:
                 break
 
-        game = sorted(draft)
-        game_sum = total_sum(game)
+        game      = sorted(draft)
+        game_sum  = total_sum(game)
         even_count = count_even(game)
 
         if len(game) != picks:
@@ -130,9 +151,9 @@ def generate_games(filters: dict[str, Any]) -> list[dict[str, Any]]:
             unique_games.add(key)
             results.append(
                 {
-                    'numbers': game,
-                    'score': score_game(game, freq, delays),
-                    'sum': game_sum,
+                    'numbers':    game,
+                    'score':      score_game(game, freq, delays),
+                    'sum':        game_sum,
                     'even_count': even_count,
                 }
             )
